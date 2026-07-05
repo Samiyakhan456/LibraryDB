@@ -1,21 +1,21 @@
-import os
-from dotenv import load_dotenv
-import mysql.connector
+import os #os lets PY work with things from env
+from dotenv import load_dotenv #This opens .env files and loads the values inside it
+import mysql.connector # the bridge between MYsql and Python
 
 # Load variables from .env
 load_dotenv()
 
-
+#Helps build an open connection to the database
 def connect_db():
     return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password=os.getenv("MYSQL_PASSWORD"),
-        database="LibraryDB"
+        host="localhost",#here the database is on my computer so localhost if it was on any other machine we would put IP or server name
+        user="root" #the account being used to log in
+        password=os.getenv("MYSQL_PASSWORD"),#Go to .env and fetch password 
+        database="LibraryDB" #which data base to use after connecting 
     )
 
 
-def view_all_books(cursor):
+def view_all_books(cursor):#cursor is used to run sql queries and fetch results
     query = """
     SELECT book_id, title, author, published_year, available
     FROM books;
