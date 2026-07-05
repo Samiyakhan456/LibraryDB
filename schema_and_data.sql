@@ -25,6 +25,15 @@ CREATE TABLE borrowings (
      FOREIGN KEY (book_id) REFERENCES books(book_id),
      FOREIGN KEY (member_id) REFERENCES members(member_id)
      );
+CREATE TABLE fines (
+    fine_id INT AUTO_INCREMENT PRIMARY KEY,
+    borrow_id INT NOT NULL,
+    fine_amount DECIMAL(10,2) NOT NULL,
+    days_overdue INT NOT NULL,
+    paid BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (borrow_id) REFERENCES borrowings(borrow_id)
+);
+
 
 INSERT INTO Books (title, author, published_year, available)
 VALUES
@@ -103,3 +112,16 @@ JOIN members ON borrowings.member_id = members.member_id
 JOIN books ON borrowings.book_id = books.book_id
 WHERE members.name = 'Samiya Khan'
 ORDER BY borrowings.borrowed_at DESC;
+
+SELECT 
+    b.borrow_id,
+    m.name AS member_name,
+    bk.title AS book_title,
+    b.due_date,
+    DATEDIFF(CURDATE(), b.due_date) AS days_overdue,
+    DATEDIFF(CURDATE(), b.due_date) * 10 AS fine_amount
+FROM borrowings b
+JOIN members m ON b.member_id = m.member_id
+JOIN books bk ON b.book_id = bk.book_id
+WHERE b.returned_at IS NULL
+  AND b.due_date < CURDATE();
